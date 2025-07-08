@@ -28,6 +28,12 @@
                         <input type="password" class="form-control" name="password" placeholder="Password" minlength="6" required>
                     </div>
 
+                    <div class="form-group text-right mb-4">
+                        <a href="#" class="text-primary" style="font-size: 15px; font-weight: 600;" data-dismiss="modal" data-toggle="modal" data-target="#forgot-password-modal">
+                            Forgot Password?
+                        </a>
+                    </div>
+
                     <div class="form-group">
                         <button type="submit" class="btn btn-block btn-primary">Login</button>
                     </div>

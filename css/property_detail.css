@@ -1,15 +1,23 @@
+
+
 .carousel img {
     height: 300px;
     object-fit: cover;
+    width: 100%;
 }
+
 
 .property-summary {
     padding: 24px;
 }
 
-.property-amenities,
-.property-rating {
+body.light-theme .property-amenities,
+body.light-theme .property-rating {
     background-color: #fcfaf7;
+}
+body.dark-theme .property-amenities,
+body.dark-theme .property-rating {
+    background-color: #000000;
 }
 
 .star-container i {

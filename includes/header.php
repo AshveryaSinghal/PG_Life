@@ -1,7 +1,7 @@
 <div class="header sticky-top">
     <nav class="navbar navbar-expand-md navbar-light">
         <a class="navbar-brand" href="index.php">
-            <img src="img/logo.png" />
+            <img src="img/logo-light.png" id="theme-logo" class="theme-logo" alt="PG Life Logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#my-navbar">
             <span class="navbar-toggler-icon"></span>
@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="my-navbar">
             <ul class="navbar-nav">
                 <?php
-                //Check if user is loging or not
+            
                 if (!isset($_SESSION["user_id"])) {
                 ?>
                     <li class="nav-item">
@@ -28,7 +28,7 @@
                 } else {
                 ?>
                     <div class='nav-name'>
-                        Hi, <a href="./index.php" style = "text-decoration: none ; color: black;"><?php echo $_SESSION["full_name"] ?></a>
+                        Hi, <a href="./index.php" style="text-decoration: none; color: black;"><?php echo $_SESSION["full_name"] ?></a>
                     </div>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">
@@ -51,3 +51,16 @@
 
 <div id="loading">
 </div>
+
+<style>
+    .theme-logo {
+        height: 40px; 
+        transition: all 0.3s ease;
+    }
+    
+    
+    body.dark-theme .theme-logo {
+        filter: brightness(0) invert(1);
+    }
+</style>
+

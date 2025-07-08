@@ -20,15 +20,19 @@ if (!$property) {
     return;
 }
 
+// $sql_2 = "SELECT * FROM testimonials WHERE property_id = $property_id";
+$sql_2 = "SELECT t.*, u.profile_img 
+          FROM testimonials t
+          LEFT JOIN users u ON t.user_id = u.id
+          WHERE t.property_id = $property_id
+          ORDER BY t.id DESC";
 
-$sql_2 = "SELECT * FROM testimonials WHERE property_id = $property_id";
 $result_2 = mysqli_query($conn, $sql_2);
 if (!$result_2) {
     echo "Something went wrong!";
     return;
 }
 $testimonials = mysqli_fetch_all($result_2, MYSQLI_ASSOC);
-
 
 $sql_3 = "SELECT a.* 
             FROM amenities a
@@ -40,7 +44,6 @@ if (!$result_3) {
     return;
 }
 $amenities = mysqli_fetch_all($result_3, MYSQLI_ASSOC);
-
 
 $sql_4 = "SELECT * FROM interested_users_properties WHERE property_id = $property_id";
 $result_4 = mysqli_query($conn, $sql_4);
@@ -393,26 +396,44 @@ $interested_users_count = mysqli_num_rows($result_4);
             </div>
         </div>
     </div>
+                     
 
     <div class="property-testimonials page-container">
-        <h1>What people say</h1>
-        <?php
-        foreach ($testimonials as $testimonial) {
-        ?>
-            <div class="testimonial-block">
-                <div class="testimonial-image-container">
-                    <img class="testimonial-img" src="img/man.png">
-                </div>
-                <div class="testimonial-text">
-                    <i class="fa fa-quote-left" aria-hidden="true"></i>
-                    <p><?= $testimonial['content'] ?></p>
-                </div>
-                <div class="testimonial-name">- <?= $testimonial['user_name'] ?></div>
+    <h1>What people say</h1>
+    <?php
+foreach ($testimonials as $testimonial) {
+    $profile_img = $testimonial['profile_img'] ?? 'uploads/default.jpg';
+?>
+        <div class="testimonial-block">
+            <div class="testimonial-image-container">
+                <img class="testimonial-img" src="<?= $profile_img ?>">
             </div>
-        <?php
-        }
-        ?>
+            <div class="testimonial-text">
+                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                <p><?= $testimonial['content'] ?></p>
+            </div>
+            <div class="testimonial-name">- <?= $testimonial['user_name'] ?></div>
+        </div>
+    <?php
+    }
+    ?>
+</div>
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <div class="page-container" style="margin-top: 40px;">
+        <h1>Give Reviews</h1>
+        <form action="submit_testimonial.php" method="POST">
+            <input type="hidden" name="property_id" value="<?= $property_id ?>">
+            <div class="form-group">
+                <textarea name="testimonial" rows="4" class="form-control" placeholder="Write your review here..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
     </div>
+<?php else: ?>
+    <div class="page-container" style="margin-top: 40px;">
+        <p><a href="#" data-toggle="modal" data-target="#login-modal">Login</a> to give a review.</p>
+    </div>
+<?php endif; ?>
 
     <?php
     include "includes/signup_modal.php";
