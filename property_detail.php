@@ -4,11 +4,14 @@ require "includes/database_connect.php";
 
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : NULL;
 $property_id = $_GET["property_id"];
+$property_id = $_GET['property_id'];
 
+
+// Get property details
 $sql_1 = "SELECT *, p.id AS property_id, p.name AS property_name, c.name AS city_name 
-            FROM properties p
-            INNER JOIN cities c ON p.city_id = c.id 
-            WHERE p.id = $property_id";
+          FROM properties p
+          INNER JOIN cities c ON p.city_id = c.id 
+          WHERE p.id = $property_id";
 $result_1 = mysqli_query($conn, $sql_1);
 if (!$result_1) {
     echo "Something went wrong!";
@@ -20,24 +23,48 @@ if (!$property) {
     return;
 }
 
-// $sql_2 = "SELECT * FROM testimonials WHERE property_id = $property_id";
-$sql_2 = "SELECT t.*, u.profile_img 
-          FROM testimonials t
-          LEFT JOIN users u ON t.user_id = u.id
-          WHERE t.property_id = $property_id
-          ORDER BY t.id DESC";
+// Get next property
+$sql_next = "SELECT id FROM properties 
+             WHERE city_id = {$property['city_id']} AND id > $property_id 
+             ORDER BY id ASC LIMIT 1";
+$result_next = mysqli_query($conn, $sql_next);
+$next_property = mysqli_fetch_assoc($result_next);
+
+// Get previous property
+$sql_prev = "SELECT id FROM properties 
+             WHERE city_id = {$property['city_id']} AND id < $property_id 
+             ORDER BY id DESC LIMIT 1";
+$result_prev = mysqli_query($conn, $sql_prev);
+$prev_property = mysqli_fetch_assoc($result_prev);
+
+
+$sql_2 = "
+    SELECT 
+        t.*, 
+        COALESCE(u.full_name, t.user_name) AS full_name,
+        COALESCE(u.profile_img, t.profile_img) AS profile_img
+    FROM testimonials t
+    LEFT JOIN users u ON t.user_id = u.id
+    WHERE t.property_id = $property_id
+    ORDER BY t.id DESC
+";
+
 
 $result_2 = mysqli_query($conn, $sql_2);
+
 if (!$result_2) {
     echo "Something went wrong!";
     return;
 }
+
 $testimonials = mysqli_fetch_all($result_2, MYSQLI_ASSOC);
 
+
+// Get amenities
 $sql_3 = "SELECT a.* 
-            FROM amenities a
-            INNER JOIN properties_amenities pa ON a.id = pa.amenity_id
-            WHERE pa.property_id = $property_id";
+          FROM amenities a
+          INNER JOIN properties_amenities pa ON a.id = pa.amenity_id
+          WHERE pa.property_id = $property_id";
 $result_3 = mysqli_query($conn, $sql_3);
 if (!$result_3) {
     echo "Something went wrong!";
@@ -45,6 +72,7 @@ if (!$result_3) {
 }
 $amenities = mysqli_fetch_all($result_3, MYSQLI_ASSOC);
 
+// Get interested users
 $sql_4 = "SELECT * FROM interested_users_properties WHERE property_id = $property_id";
 $result_4 = mysqli_query($conn, $sql_4);
 if (!$result_4) {
@@ -54,6 +82,7 @@ if (!$result_4) {
 $interested_users = mysqli_fetch_all($result_4, MYSQLI_ASSOC);
 $interested_users_count = mysqli_num_rows($result_4);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -98,7 +127,7 @@ $interested_users_count = mysqli_num_rows($result_4);
             }
             ?>
         </ol>
-        <div class="carousel-inner">
+        <!-- <div class="carousel-inner">
             <?php
             foreach ($property_images as $index => $property_image) {
             ?>
@@ -108,7 +137,22 @@ $interested_users_count = mysqli_num_rows($result_4);
             <?php
             }
             ?>
+        </div> -->
+        <!-- Modify the carousel-inner div to add click handlers -->
+<div class="carousel-inner">
+    <?php
+    foreach ($property_images as $index => $property_image) {
+    ?>
+        <div class="carousel-item <?= $index == 0 ? "active" : ""; ?>">
+            <img class="d-block w-100 property-image-popup" 
+                 src="<?= $property_image ?>" 
+                 alt="Property image"
+                 data-index="<?= $index ?>">
         </div>
+    <?php
+    }
+    ?>
+</div>
         <a class="carousel-control-prev" href="#property-images" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
@@ -398,34 +442,87 @@ $interested_users_count = mysqli_num_rows($result_4);
     </div>
                      
 
-    <div class="property-testimonials page-container">
+<div class="property-testimonials page-container">
     <h1>What people say</h1>
-    <?php
-foreach ($testimonials as $testimonial) {
-    $profile_img = $testimonial['profile_img'] ?? 'uploads/default.jpg';
-?>
-        <div class="testimonial-block">
+
+    <?php foreach ($testimonials as $testimonial): ?>
+        <?php
+         
+
+$profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img'] : 'uploads/default.jpg';
+    $user_name = !empty($testimonial['full_name']) ? $testimonial['full_name'] : 'Anonymous';
+
+
+
+
+            // Get review images for this testimonial
+            $testimonial_id = $testimonial['id'];
+            $review_images = [];
+            $img_result = mysqli_query($conn, "SELECT image_path FROM testimonial_images WHERE testimonial_id = $testimonial_id");
+            while ($img_row = mysqli_fetch_assoc($img_result)) {
+                $review_images[] = $img_row['image_path'];
+            }
+        ?>
+        <div class="testimonial-block" style="display: flex; gap: 20px; margin-bottom: 30px;">
             <div class="testimonial-image-container">
-                <img class="testimonial-img" src="<?= $profile_img ?>">
-            </div>
-            <div class="testimonial-text">
-                <i class="fa fa-quote-left" aria-hidden="true"></i>
-                <p><?= $testimonial['content'] ?></p>
-            </div>
-            <div class="testimonial-name">- <?= $testimonial['user_name'] ?></div>
-        </div>
-    <?php
-    }
-    ?>
+    <div class="profile-wrapper">
+        <img class="testimonial-img" src="<?= htmlspecialchars($profile_img) ?>" alt="User image">
+    </div>
 </div>
-    <?php if (isset($_SESSION['user_id'])): ?>
+
+            <div class="testimonial-text" style="flex: 1;">
+                <i class="fa fa-quote-left" aria-hidden="true"></i>
+                <p><?= htmlspecialchars($testimonial['content']) ?></p>
+
+                <?php if (!empty($review_images)): ?>
+                    <div class="review-images-row"
+                         style="display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 10px;">
+                        <?php foreach ($review_images as $image): ?>
+                            <img src="<?= htmlspecialchars($image) ?>"
+                                 class="review-image-popup"
+                                 alt="Uploaded PG photo"
+                                 style="width: 150px; height: auto; border-radius: 5px; cursor: pointer; flex-shrink: 0;">
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                    <span>- <?= htmlspecialchars($user_name) ?></span>
+
+                    <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $testimonial['user_id']): ?>
+                        <form method="POST" action="delete_testimonial.php"
+                              onsubmit="return confirm('Are you sure you want to delete this review?');"
+                              style="margin: 0;">
+                            <input type="hidden" name="testimonial_id" value="<?= $testimonial['id'] ?>">
+                            <input type="hidden" name="property_id" value="<?= $property_id ?>">
+                            <button type="submit" class="btn btn-link text-danger p-0" title="Delete Review">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- Review Form -->
+<?php if (isset($_SESSION['user_id'])): ?>
     <div class="page-container" style="margin-top: 40px;">
         <h1>Give Reviews</h1>
-        <form action="submit_testimonial.php" method="POST">
+        <form action="submit_testimonial.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="property_id" value="<?= $property_id ?>">
+
             <div class="form-group">
                 <textarea name="testimonial" rows="4" class="form-control" placeholder="Write your review here..." required></textarea>
             </div>
+
+            <div class="form-group">
+    <label for="review_images">Upload up to 4 images (optional):</label>
+    <input type="file" name="review_images[]" id="review_images" accept="image/*" multiple>
+</div>
+
+
             <button type="submit" class="btn btn-primary">Submit Review</button>
         </form>
     </div>
@@ -435,13 +532,120 @@ foreach ($testimonials as $testimonial) {
     </div>
 <?php endif; ?>
 
-    <?php
-    include "includes/signup_modal.php";
-    include "includes/login_modal.php";
-    include "includes/footer.php";
-    ?>
+<!-- Navigation -->
+<div class="page-container text-center" style="margin-top: 40px;">
+    <div class="btn-group" role="group" aria-label="Navigation">
+        <?php if ($prev_property): ?>
+            <a href="property_detail.php?property_id=<?= $prev_property['id'] ?>" class="btn btn-primary mx-5">
+                &laquo; Previous Property
+            </a>
+        <?php endif; ?>
 
-    <script type="text/javascript" src="js/property_detail.js"></script>
-</body>
+        <?php if ($next_property): ?>
+            <a href="property_detail.php?property_id=<?= $next_property['id'] ?>" class="btn btn-primary mx-5">
+                Next Property &raquo;
+            </a>
+        <?php endif; ?>
+    </div>
+</div>
 
-</html>
+<!-- Image Modal -->
+<!-- Image Modal -->
+<div id="review-image-modal" class="image-popup"
+     style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center;">
+    
+    <span class="close-popup"
+          style="position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer;">&times;</span>
+
+    <!-- Navigation Arrows -->
+    <span id="prev-image" style="position: absolute; left: 20px; font-size: 50px; color: white; cursor: pointer;">&#10094;</span>
+    <span id="next-image" style="position: absolute; right: 20px; font-size: 50px; color: white; cursor: pointer;">&#10095;</span>
+
+    <!-- Image -->
+    <img class="popup-img" id="popup-img" src="" alt="Popup image"
+         style="max-width: 90%; max-height: 90%; border-radius: 10px;">
+</div>
+
+
+<?php
+include "includes/signup_modal.php";
+include "includes/login_modal.php";
+include "includes/footer.php";
+?>
+
+<script type="text/javascript" src="js/property_detail.js"></script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    const popup = document.getElementById('review-image-modal');
+    const popupImg = document.getElementById('popup-img');
+    const closeBtn = document.querySelector('.close-popup');
+    const prevBtn = document.getElementById('prev-image');
+    const nextBtn = document.getElementById('next-image');
+
+    let currentImageIndex = 0;
+    let currentImageList = [];
+
+    // Handle property image clicks
+    document.querySelectorAll('.property-image-popup').forEach(img => {
+        img.addEventListener('click', function() {
+            // Get all property images
+            currentImageList = Array.from(document.querySelectorAll('.property-image-popup')).map(img => img.src);
+            currentImageIndex = parseInt(this.getAttribute('data-index'));
+
+            popupImg.src = this.src;
+            popup.style.display = 'flex';
+        });
+    });
+
+    // Handle testimonial image clicks (your existing code)
+    document.querySelectorAll('.review-image-popup').forEach(img => {
+        img.addEventListener('click', function() {
+            const parentRow = this.closest('.review-images-row');
+            currentImageList = Array.from(parentRow.querySelectorAll('.review-image-popup')).map(img => img.src);
+            currentImageIndex = currentImageList.indexOf(this.src);
+
+            popupImg.src = this.src;
+            popup.style.display = 'flex';
+        });
+    });
+
+    // Navigation (works for both property and testimonial images)
+    prevBtn.addEventListener('click', function() {
+        if (currentImageList.length === 0) return;
+        currentImageIndex = (currentImageIndex - 1 + currentImageList.length) % currentImageList.length;
+        popupImg.src = currentImageList[currentImageIndex];
+    });
+
+    nextBtn.addEventListener('click', function() {
+        if (currentImageList.length === 0) return;
+        currentImageIndex = (currentImageIndex + 1) % currentImageList.length;
+        popupImg.src = currentImageList[currentImageIndex];
+    });
+
+    // Close popup
+    closeBtn.addEventListener('click', function() {
+        popup.style.display = 'none';
+    });
+
+    // Click outside image closes modal
+    popup.addEventListener('click', function(e) {
+        if (e.target === popup) {
+            popup.style.display = 'none';
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (popup.style.display === 'flex') {
+            if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            } else if (e.key === 'Escape') {
+                popup.style.display = 'none';
+            }
+        }
+    });
+});
+</script>
