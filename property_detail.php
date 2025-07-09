@@ -470,9 +470,15 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     </div>
 </div>
 
-            <div class="testimonial-text" style="flex: 1;">
+            <!-- <div class="testimonial-text" style="flex: 1;">
                 <i class="fa fa-quote-left" aria-hidden="true"></i>
-                <p><?= htmlspecialchars($testimonial['content']) ?></p>
+                <p><?= htmlspecialchars($testimonial['content']) ?></p> -->
+                <div class="testimonial-text" style="flex: 1; word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;">
+    <i class="fa fa-quote-left" aria-hidden="true"></i>
+    <p style="margin: 0; word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;">
+        <?= htmlspecialchars($testimonial['content']) ?>
+    </p>
+
 
                 <?php if (!empty($review_images)): ?>
                     <div class="review-images-row"
@@ -510,27 +516,31 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
 <?php if (isset($_SESSION['user_id'])): ?>
     <div class="page-container" style="margin-top: 40px;">
         <h1>Give Reviews</h1>
-        <form action="submit_testimonial.php" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="property_id" value="<?= $property_id ?>">
+        <form id="review-form" enctype="multipart/form-data">
+    <input type="hidden" name="property_id" value="<?= $property_id ?>">
 
-            <div class="form-group">
-                <textarea name="testimonial" rows="4" class="form-control" placeholder="Write your review here..." required></textarea>
-            </div>
+    <div class="form-group">
+        <textarea name="testimonial" rows="4" class="form-control" placeholder="Write your review here..." required></textarea>
+    </div>
 
-            <div class="form-group">
-    <label for="review_images">Upload up to 4 images (optional):</label>
-    <input type="file" name="review_images[]" id="review_images" accept="image/*" multiple>
-</div>
+    <div class="form-group">
+        <label for="review_images">Upload up to 4 images (you can add one-by-one or multiple):</label>
+        <input type="file" id="review_images" accept="image/*" multiple>
+    </div>
 
+    <!-- Preview container -->
+    <div id="preview-container" style="margin-bottom: 10px;"></div>
 
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-        </form>
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+</form>
+
     </div>
 <?php else: ?>
     <div class="page-container" style="margin-top: 40px;">
         <p><a href="#" data-toggle="modal" data-target="#login-modal">Login</a> to give a review.</p>
     </div>
 <?php endif; ?>
+
 
 <!-- Navigation -->
 <div class="page-container text-center" style="margin-top: 40px;">
@@ -574,6 +584,86 @@ include "includes/footer.php";
 ?>
 
 <script type="text/javascript" src="js/property_detail.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById('review_images');
+    const previewContainer = document.getElementById('preview-container');
+    const form = document.getElementById('review-form');
+
+    let selectedFiles = [];
+
+    fileInput.addEventListener('change', function (e) {
+        const newFiles = Array.from(e.target.files);
+
+        newFiles.forEach(file => {
+            if (selectedFiles.length < 4) {
+                selectedFiles.push(file);
+            }
+        });
+
+        updatePreview();
+        fileInput.value = ''; // Clear input so same file can be selected again
+    });
+
+    function updatePreview() {
+        previewContainer.innerHTML = '';
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.margin = '5px';
+                img.style.borderRadius = '5px';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '❌';
+                removeBtn.style.marginLeft = '5px';
+                removeBtn.style.border = 'none';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.onclick = function () {
+                    selectedFiles.splice(index, 1);
+                    updatePreview();
+                };
+
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'inline-block';
+                wrapper.style.position = 'relative';
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        selectedFiles.forEach(file => {
+            formData.append('review_images[]', file);
+        });
+
+        fetch('submit_testimonial.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.text())
+        .then(response => {
+            alert("Review submitted successfully!");
+            window.location.href = "property_detail.php?property_id=" + <?= $property_id ?>;
+        })
+        .catch(error => {
+            alert("There was an error submitting the review.");
+            console.error(error);
+        });
+    });
+});
+</script>
+
 <script>
 
 document.addEventListener("DOMContentLoaded", function() {
