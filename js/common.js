@@ -123,13 +123,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-// Add this to your script file
+
 document.querySelector('.theme-toggle-switch').addEventListener('focus', function(e) {
     this.style.outline = 'none';
     this.style.boxShadow = 'none';
 });
 
-// Or if using jQuery
 $('.theme-toggle-switch').focus(function() {
     $(this).css({'outline': 'none', 'box-shadow': 'none'});
 });

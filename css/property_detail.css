@@ -159,9 +159,6 @@ body.dark-theme .property-rating {
 
 
 
-
-
-
 .property-testimonials {
     margin-top: 60px;
 }
@@ -172,17 +169,7 @@ body.dark-theme .property-rating {
     font-weight: bold;
 }
 
-/* .testimonial-block {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 20px;
-    background-color: #fcfaf7;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-} */
+
 
 
 .testimonial-block {
@@ -284,11 +271,7 @@ body.dark-theme .testimonial-text i.fa-quote-left {
 .testimonial-name form {
     margin-left: 20px;
 }
-/* .testimonial-text p {
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 5px;
-} */
+
 
 @media (max-width: 768px) {
     .testimonial-block {

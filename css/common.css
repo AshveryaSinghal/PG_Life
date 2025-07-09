@@ -183,18 +183,16 @@ body.dark-theme .header .nav-vl {
 
 
 
-
-/* Dark Theme Navbar Text Fix */
 body.dark-theme .header .navbar .nav-link,
 body.dark-theme .header .nav-name a,
 body.dark-theme .header .nav-name {
     color: #ffffff !important;
 }
 
-/* Optional: Hover effect for better UX */
+
 body.dark-theme .header .navbar .nav-link:hover,
 body.dark-theme .header .nav-name a:hover {
-    color: #ff9f9f !important; /* light red/pink tint */
+    color: #ff9f9f !important; 
 }
 
 

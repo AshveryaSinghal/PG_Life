@@ -7,7 +7,6 @@ $property_id = $_GET["property_id"];
 $property_id = $_GET['property_id'];
 
 
-// Get property details
 $sql_1 = "SELECT *, p.id AS property_id, p.name AS property_name, c.name AS city_name 
           FROM properties p
           INNER JOIN cities c ON p.city_id = c.id 
@@ -23,14 +22,12 @@ if (!$property) {
     return;
 }
 
-// Get next property
 $sql_next = "SELECT id FROM properties 
              WHERE city_id = {$property['city_id']} AND id > $property_id 
              ORDER BY id ASC LIMIT 1";
 $result_next = mysqli_query($conn, $sql_next);
 $next_property = mysqli_fetch_assoc($result_next);
 
-// Get previous property
 $sql_prev = "SELECT id FROM properties 
              WHERE city_id = {$property['city_id']} AND id < $property_id 
              ORDER BY id DESC LIMIT 1";
@@ -60,7 +57,6 @@ if (!$result_2) {
 $testimonials = mysqli_fetch_all($result_2, MYSQLI_ASSOC);
 
 
-// Get amenities
 $sql_3 = "SELECT a.* 
           FROM amenities a
           INNER JOIN properties_amenities pa ON a.id = pa.amenity_id
@@ -72,7 +68,6 @@ if (!$result_3) {
 }
 $amenities = mysqli_fetch_all($result_3, MYSQLI_ASSOC);
 
-// Get interested users
 $sql_4 = "SELECT * FROM interested_users_properties WHERE property_id = $property_id";
 $result_4 = mysqli_query($conn, $sql_4);
 if (!$result_4) {
@@ -127,18 +122,9 @@ $interested_users_count = mysqli_num_rows($result_4);
             }
             ?>
         </ol>
-        <!-- <div class="carousel-inner">
-            <?php
-            foreach ($property_images as $index => $property_image) {
-            ?>
-                <div class="carousel-item <?= $index == 0 ? "active" : ""; ?>">
-                    <img class="d-block w-100" src="<?= $property_image ?>" alt="slide">
-                </div>
-            <?php
-            }
-            ?>
-        </div> -->
-        <!-- Modify the carousel-inner div to add click handlers -->
+       
+            
+        
 <div class="carousel-inner">
     <?php
     foreach ($property_images as $index => $property_image) {
@@ -455,7 +441,6 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
 
 
 
-            // Get review images for this testimonial
             $testimonial_id = $testimonial['id'];
             $review_images = [];
             $img_result = mysqli_query($conn, "SELECT image_path FROM testimonial_images WHERE testimonial_id = $testimonial_id");
@@ -470,9 +455,7 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     </div>
 </div>
 
-            <!-- <div class="testimonial-text" style="flex: 1;">
-                <i class="fa fa-quote-left" aria-hidden="true"></i>
-                <p><?= htmlspecialchars($testimonial['content']) ?></p> -->
+            
                 <div class="testimonial-text" style="flex: 1; word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;">
     <i class="fa fa-quote-left" aria-hidden="true"></i>
     <p style="margin: 0; word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;">
@@ -512,7 +495,6 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     <?php endforeach; ?>
 </div>
 
-<!-- Review Form -->
 <?php if (isset($_SESSION['user_id'])): ?>
     <div class="page-container" style="margin-top: 40px;">
         <h1>Give Reviews</h1>
@@ -524,11 +506,10 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     </div>
 
     <div class="form-group">
-        <label for="review_images">Upload up to 4 images (you can add one-by-one or multiple):</label>
+        <label for="review_images">Upload up to 4 images (Optional):</label>
         <input type="file" id="review_images" accept="image/*" multiple>
     </div>
 
-    <!-- Preview container -->
     <div id="preview-container" style="margin-bottom: 10px;"></div>
 
     <button type="submit" class="btn btn-primary">Submit Review</button>
@@ -541,8 +522,6 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     </div>
 <?php endif; ?>
 
-
-<!-- Navigation -->
 <div class="page-container text-center" style="margin-top: 40px;">
     <div class="btn-group" role="group" aria-label="Navigation">
         <?php if ($prev_property): ?>
@@ -559,8 +538,7 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     </div>
 </div>
 
-<!-- Image Modal -->
-<!-- Image Modal -->
+
 <div id="review-image-modal" class="image-popup"
      style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center;">
     
@@ -571,7 +549,7 @@ $profile_img = !empty($testimonial['profile_img']) ? $testimonial['profile_img']
     <span id="prev-image" style="position: absolute; left: 20px; font-size: 50px; color: white; cursor: pointer;">&#10094;</span>
     <span id="next-image" style="position: absolute; right: 20px; font-size: 50px; color: white; cursor: pointer;">&#10095;</span>
 
-    <!-- Image -->
+   
     <img class="popup-img" id="popup-img" src="" alt="Popup image"
          style="max-width: 90%; max-height: 90%; border-radius: 10px;">
 </div>
@@ -602,7 +580,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         updatePreview();
-        fileInput.value = ''; // Clear input so same file can be selected again
+        fileInput.value = ''; 
     });
 
     function updatePreview() {
@@ -676,10 +654,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentImageIndex = 0;
     let currentImageList = [];
 
-    // Handle property image clicks
+   
     document.querySelectorAll('.property-image-popup').forEach(img => {
         img.addEventListener('click', function() {
-            // Get all property images
+            
             currentImageList = Array.from(document.querySelectorAll('.property-image-popup')).map(img => img.src);
             currentImageIndex = parseInt(this.getAttribute('data-index'));
 
@@ -688,7 +666,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Handle testimonial image clicks (your existing code)
+    
     document.querySelectorAll('.review-image-popup').forEach(img => {
         img.addEventListener('click', function() {
             const parentRow = this.closest('.review-images-row');
@@ -700,7 +678,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Navigation (works for both property and testimonial images)
+   
     prevBtn.addEventListener('click', function() {
         if (currentImageList.length === 0) return;
         currentImageIndex = (currentImageIndex - 1 + currentImageList.length) % currentImageList.length;
