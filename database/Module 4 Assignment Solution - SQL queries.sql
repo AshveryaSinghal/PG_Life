@@ -64,3 +64,10 @@ CREATE TABLE interested_users_properties (
   FOREIGN KEY(user_id) REFERENCES users(id),
   FOREIGN KEY(property_id) REFERENCES properties(id)
 );
+CREATE TABLE testimonial_images (
+    id INT NOT NULL AUTO_INCREMENT,
+    testimonial_id INT NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(testimonial_id) REFERENCES testimonials(id) ON DELETE CASCADE
+);

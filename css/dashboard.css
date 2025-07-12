@@ -1,4 +1,4 @@
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .profile-img-container {
         text-align: center;
         padding-bottom: 32px;
@@ -26,11 +26,11 @@
     cursor: pointer;
 }
 
-.my-interested-properties {
+body.light-theme .my-interested-properties {
     background-color: #fcfaf7;
 }
 
-.property-card {
+body.light-theme.property-card {
     background-color: #ffffff;
     border-radius: 2px;
     padding: 15px 0px;
@@ -119,4 +119,227 @@
     border-radius: 0px;
     width: 140px;
     float: right;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ========== COMMON STYLES ========== */
+.profile-img {
+    font-size: 75px;
+    text-align: center;
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    line-height: 100px;
+}
+
+.profile .name {
+    font-weight: bold;
+}
+
+.edit-profile {
+    font-size: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.property-card:focus,
+.property-card:hover {
+    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+}
+
+.image-container {
+    text-align: center;
+}
+
+.image-container img {
+    width: 100%;
+    max-width: 300px;
+}
+
+.star-container i {
+    font-size: 10px;
+    margin-right: 6px;
+    color: #EA322E;
+}
+
+.interested-container {
+    text-align: center;
+    padding: 8px 16px;
+}
+
+.interested-container i {
+    font-size: 20px;
+    color: #EA322E;
+    cursor: pointer;
+}
+
+.interested-text {
+    font-size: 10px;
+}
+
+.detail-container {
+    padding-bottom: 10px;
+}
+
+.property-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.property-address {
+    color: #6f6f6f;
+    font-size: 13px;
+    padding-bottom: 5px;
+}
+
+.property-gender img {
+    width: 40px;
+}
+
+.rent-container {
+    display: flex;
+    align-items: center;
+}
+
+.rent {
+    font-size: 18px;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.rent-unit {
+    font-size: 12px;
+    color: #6f6f6f;
+}
+
+.button-container .btn {
+    font-size: 14px;
+    border-radius: 0px;
+    width: 140px;
+    float: right;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .profile-img-container {
+        text-align: center;
+        padding-bottom: 32px;
+    }
+
+    .image-container {
+        padding-bottom: 12px;
+    }
+}
+
+/* ========== LIGHT THEME ========== */
+body.light-theme {
+    background-color: #fff;
+    color: #000;
+}
+
+body.light-theme .profile-img {
+    background-color: #fff;
+    border: 1px solid #e4e4e4;
+    color: #7d7d7d;
+}
+
+body.light-theme .my-interested-properties {
+    background-color: #fcfaf7;
+}
+
+body.light-theme .property-card {
+    background-color: #ffffff;
+    border-radius: 2px;
+    padding: 15px 0px;
+    margin: 20px auto;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+body.light-theme .property-address,
+body.light-theme .rent-unit {
+    color: #6f6f6f;
+}
+
+body.light-theme .star-container i,
+body.light-theme .interested-container i {
+    color: #EA322E;
+}
+
+/* ========== DARK THEME ========== */
+body.dark-theme {
+    background-color: #121212;
+    color: #f0f0f0;
+}
+
+body.dark-theme .profile-img {
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    color: #aaa;
+}
+
+body.dark-theme .my-interested-properties {
+    background-color: #1e1e1e !important;
+    color: #f0f0f0 !important;
+}
+
+body.dark-theme .property-card {
+    background-color: #1e1e1e !important;
+    border: 1px solid #444 !important;
+    border-radius: 2px;
+    padding: 15px 0px;
+    margin: 20px auto;
+   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.08),
+                0 2px 10px rgba(255, 255, 255, 0.06);
+}
+body.dark-theme .property-card:hover {
+    box-shadow: 0 5px 11px rgba(255, 255, 255, 0.18),
+                0 4px 15px rgba(255, 255, 255, 0.15);
+}
+
+body.dark-theme .property-name,
+body.dark-theme .property-address,
+body.dark-theme .rent,
+body.dark-theme .rent-unit {
+    color: #e0e0e0 !important;
+}
+
+body.dark-theme .star-container i {
+    color: #ffb400 !important;
+}
+
+body.dark-theme .interested-container i {
+    color: #ff5a5a !important;
+}
+
+/* Optional: Improve input field look in dark mode */
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #555;
 }

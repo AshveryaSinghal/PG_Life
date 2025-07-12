@@ -58,11 +58,10 @@ body.dark-theme .property-card:hover {
 body.dark-theme .property-name,
 body.dark-theme .property-address,
 body.dark-theme .rent,
-body.dark-theme .rent-unit,
-body.dark-theme .star-container i,
-body.dark-theme .interested-container i {
+body.dark-theme .rent-unit {
     color: #f0f0f0 !important;
 }
+
 
 
 .image-container {
@@ -81,7 +80,7 @@ body.dark-theme .interested-container i {
 }
 
 .star-container i {
-    color: #EA322E;
+    color: #ffb400 !important;
     font-size: 10px;
     margin-right: 6px;
 }
@@ -198,3 +197,53 @@ body.dark-theme #filter-modal .modal-body h5 {
 #filter-modal .modal-footer button {
     width: 120px;
 }
+
+
+body.dark-theme .is-interested-image {
+    color: #EA322E !important;
+}
+
+
+body.dark-theme .star-container i.fa-star,
+body.dark-theme .star-container i.fa-star-half-alt,
+body.dark-theme .star-container i.fa-star-o {
+    color: #ffb400 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

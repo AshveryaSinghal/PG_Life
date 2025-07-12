@@ -14,6 +14,8 @@ if (!$result_1) {
     echo "Something went wrong!";
     return;
 }
+
+
 $user = mysqli_fetch_assoc($result_1);
 if (!$user) {
     echo "Something went wrong!";
@@ -31,6 +33,8 @@ if (!$result_2) {
 }
 $interested_properties = mysqli_fetch_all($result_2, MYSQLI_ASSOC);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
